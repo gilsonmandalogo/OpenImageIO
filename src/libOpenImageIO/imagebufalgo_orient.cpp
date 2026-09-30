@@ -380,6 +380,8 @@ ImageBufAlgo::reorient(ImageBuf& dst, const ImageBuf& src, int nthreads)
     case 8: ok = ImageBufAlgo::rotate270(dst, src, ROI(), nthreads); break;
     }
     dst.set_orientation(1);
+    dst.specmod().erase_attribute("Artist");
+    dst.specmod().erase_attribute("Copyright");
     return ok;
 }
 

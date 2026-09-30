@@ -414,6 +414,14 @@ warp_impl(ImageBuf& dst, const ImageBuf& src, const Imath::M33f& M,
     OIIO_DISPATCH_COMMON_TYPES2(ok, "warp", warp_, dst.spec().format,
                                 src.spec().format, dst, src, M, filter, wrap,
                                 edgeclamp, dst_roi, nthreads);
+    if (ok) {
+        ImageSpec& dspec = dst.specmod();
+        dspec.full_x      = dspec.x;
+        dspec.full_y      = dspec.y;
+        dspec.full_width  = dspec.width;
+        dspec.full_height = dspec.height;
+        dspec.z_channel   = -1;
+    }
     return ok;
 }
 
@@ -914,6 +922,20 @@ ImageBufAlgo::resize(ImageBuf& dst, const ImageBuf& src, KWArgs options,
     OIIO_DISPATCH_COMMON_TYPES2(ok, "resize", resize_, dst.spec().format,
                                 src.spec().format, dst, src, filterptr.get(),
                                 roi, nthreads);
+    if (ok) {
+        ImageSpec& dspec = dst.specmod();
+        for (int c = 0; c < dspec.nchannels; ++c) {
+            std::string& n = dspec.channelnames[c];
+            auto p         = n.rfind('.');
+            if (p != std::string::npos)
+                n = n.substr(p + 1);
+        }
+        if (dspec.alpha_channel >= 0) {
+            string_view an = dspec.channel_name(dspec.alpha_channel);
+            if (!Strutil::iequals(an, "A") && !Strutil::iequals(an, "alpha"))
+                dspec.alpha_channel = -1;
+        }
+    }
     return ok;
 }
 

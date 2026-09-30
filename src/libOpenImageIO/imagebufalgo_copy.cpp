@@ -202,6 +202,15 @@ ImageBufAlgo::copy(ImageBuf& dst, const ImageBuf& src, TypeDesc convert,
         newspec.nchannels = roi.chend;
         if (convert != TypeUnknown)
             newspec.set_format(convert);
+        if (roi.width() < src.spec().full_width
+            || roi.height() < src.spec().full_height
+            || roi.xbegin != src.spec().full_x
+            || roi.ybegin != src.spec().full_y) {
+            newspec.full_x      = newspec.x;
+            newspec.full_y      = newspec.y;
+            newspec.full_width  = newspec.width;
+            newspec.full_height = newspec.height;
+        }
         dst.reset(newspec);
     }
     IBAprep(roi, &dst, &src, IBAprep_SUPPORT_DEEP);
