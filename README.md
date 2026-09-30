@@ -113,6 +113,8 @@ Additional resources:
 - [Build and installation instructions](INSTALL.md) for OpenImageIO. Such
   as it is. This could use some work, particularly for Windows.
 
+A typical out-of-source CMake build uses a separate `build/` directory next to the source tree.
+
 
 🚑 Contact & reporting problems
 -------------------------------
